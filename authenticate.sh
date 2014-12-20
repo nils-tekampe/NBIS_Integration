@@ -36,28 +36,8 @@ if [[ "$(whoami)" == "root" ]];
 	exit 1
 fi
 
-# Directory the script is stored in
-SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
-#Directory for the NBIS tools
-NBIS_DIR=
-
-# Set log directory. If it doesn’t exist yet, create it
-LOGDIR="$SCRIPT_DIR/log"
-if [[ ! -d "$LOGDIR" ]];
-	then
-	`mkdir "$LOGDIR"`
-fi
-
-# Temporary directory. If it doesn’t exist yet, create it
-TMPDIR="$SCRIPT_DIR/tmp"
-if [[ ! -d "$TMPDIR" ]];
-	then
-	`mkdir "$TMPDIR"`
-fi
-
-ERRORLOG="$LOGDIR/errors"
-DEBUGLOG="$LOGDIR/debug"
+# Call the script that puts the relevant variables into memory
+source ./variables.sh
 
 ################################################################################
 # Returns the current time formated as YYYY-MM-DD_hh:mm:ss
@@ -105,7 +85,12 @@ USER_LOGFILE="$LOGDIR/log_$USER_ID"
 # MAIN
 ################################################################################
 
-NFIQ_OUTPUT=`$SCRIPT_DIR/bin/nfiq "$WSQ_INPUT"`
+if [[ ! -f "$NBIS_DIR/nfiq" ]];
+	then
+	die "NFIQ tool could not be found. Did you remember to add the directory you stored the NBIS tools in to 'variables.sh'?" 10
+fi
+
+NFIQ_OUTPUT=`$NBIS_DIR/nfiq "$WSQ_INPUT"`
 # Check if NFIQ is <= 3; if var is not assigned: set it to OVER NINE-THOUSAND
 if [[ "${NFIQ_OUTPUT:-9001}" -le 3 ]];
 	then
@@ -117,7 +102,7 @@ if [[ "${NFIQ_OUTPUT:-9001}" -le 3 ]];
 	fi
 	MINDTCT_OUTPUT=`$NBIS_DIR/mindtct "$WSQ_INPUT" "$TMPDIR/user_$USER_ID"`
 	echo "$MINDTCT_OUTPUT"
-	
+
 	BOZORTH3_OUTPUT=`$NBIS_DIR/bozorth3 $TMPDIR/user_$USER_ID.xyt $USERFILE`
 	# Check if BOZORTH3 Score is >= 40; if var is not assigned: set it to 0
 	# Matches the score against the specified Threshold. If T is undefined: set it to 40
@@ -126,15 +111,14 @@ if [[ "${NFIQ_OUTPUT:-9001}" -le 3 ]];
 		#echo "Authentication successful. Claimed user $USER_ID appears to match sample."
 	else
 		echo $BOZORTH3_OUTPUT > $USER_LOGFILE
-		die "Sample appears not to be matching user file." 8		
+		die "Sample appears not to be matching user file." 8
 	fi
-	
+
 # if NFIQ is higher than 3
 else
 	echo $NFIQ_OUTPUT > $USER_LOGFILE
 	die "Bad fingerprint quality -- value is ${NFIQ_OUTPUT:-9001}, should be <= 3" 2
 fi
-
 
 # Delete tmp dir only if the script didn’t exit early on---files might be needed
 delete_tmp

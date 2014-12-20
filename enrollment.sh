@@ -79,6 +79,11 @@ USER_LOGFILE="$LOGDIR/log_$USER_ID"
 # MAIN
 ################################################################################
 
+if [[ ! -f "$NBIS_DIR/nfiq" ]];
+	then
+	die "NFIQ tool could not be found. Did you remember to add the directory you stored the NBIS tools in to 'variables.sh'?" 10
+fi
+
 NFIQ_OUTPUT=`$NBIS_DIR/nfiq "$WSQ_INPUT"`
 # Check if NFIQ is <= 3; if var is not assigned: set it to OVER NINE-THOUSAND
 if [[ "${NFIQ_OUTPUT:-9001}" -le 3 ]];

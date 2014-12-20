@@ -17,3 +17,6 @@ fi
 
 ERRORLOG="$LOGDIR/errors"
 DEBUGLOG="$LOGDIR/debug"
+
+# Directory containing the NBIS tools binaries (NBIS-INSTALLDIR/bin)
+NBIS_DIR=
