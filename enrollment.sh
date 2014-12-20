@@ -35,24 +35,8 @@ if [[ "$(whoami)" == "root" ]];
 	exit 1
 fi
 
-# Directory the script is stored in
-SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
-# Set log directory. If it doesn’t exist yet, create it
-LOGDIR="$SCRIPT_DIR/log"
-if [[ ! -d "$LOGDIR" ]];
-	then
-	`mkdir "$LOGDIR"`
-fi
-
-# Temporary directory. If it doesn’t exist yet, create it
-TMPDIR="$SCRIPT_DIR/tmp"
-if [[ ! -d "$TMPDIR" ]];
-	then
-	`mkdir "$TMPDIR"`
-fi
-
-ERRORLOG="$LOGDIR/errors"
+# Call the script that puts the relevant variables into memory
+source ./variables.sh
 
 ################################################################################
 # Returns the current time formated as YYYY-MM-DD_hh:mm:ss
@@ -95,7 +79,7 @@ USER_LOGFILE="$LOGDIR/log_$USER_ID"
 # MAIN
 ################################################################################
 
-NFIQ_OUTPUT=`$SCRIPT_DIR/bin/nfiq "$WSQ_INPUT"`
+NFIQ_OUTPUT=`$NBIS_DIR/nfiq "$WSQ_INPUT"`
 # Check if NFIQ is <= 3; if var is not assigned: set it to OVER NINE-THOUSAND
 if [[ "${NFIQ_OUTPUT:-9001}" -le 3 ]];
 	then
@@ -105,7 +89,7 @@ if [[ "${NFIQ_OUTPUT:-9001}" -le 3 ]];
 	if [[ -e $USERFILE ]]; then
 		die "User with ID: $USER_ID already exists" 7
 	else
-		MINDTCT_OUTPUT=`$SCRIPT_DIR/bin/mindtct "$WSQ_INPUT" "$TMPDIR/user_$USER_ID"`
+		MINDTCT_OUTPUT=`$NBIS_DIR/mindtct "$WSQ_INPUT" "$TMPDIR/user_$USER_ID"`
 		echo "$MINDTCT_OUTPUT"
 	fi
 # if NFIQ is higher than 3
