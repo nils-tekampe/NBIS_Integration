@@ -7,5 +7,7 @@ The scripts utilize the NBIS tools of NIST (http://www.nist.gov/itl/iad/ig/nbis.
 Instructions
 ============
 In oder to use the scripts you may:
-# Obtain your copy of the NBIS tools first from http://www.nist.gov/itl/iad/ig/nbis.cfm and install it according to the instructions. 
-# Adopt the values of the variables in the variables.sh to your needs
+1. Obtain your copy of the NBIS tools first from http://www.nist.gov/itl/iad/ig/nbis.cfm and install it according to the instructions. 
+2. Adopt the values of the variables in the variables.sh to your needs
+
+In case of any questions, please contact nils@tekampe.org. 
